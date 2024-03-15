@@ -10,6 +10,7 @@ const ShowProductos = () => {
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
     const [titleModal, setTitleModal] = useState('');
+    const [operation, setOperation] = useState(1);
 
     const getProductos = async () => {
         const response = await axios.get(url);
@@ -28,12 +29,14 @@ const ShowProductos = () => {
 
         if (operation === 1) {
             setTitleModal('Registrar Producto');
+            setOperation(1);
         } else if (operation === 2) {
             setTitleModal('Editar Producto');
             setId(id);
             setTitle(title);
             setDescription(description);
             setPrice(price);
+            setOperation(2);
         }
     }
 
@@ -61,12 +64,16 @@ const ShowProductos = () => {
             document.getElementById('btnCerrarModal').click();
             getProductos();
         }).catch((error) => {
-            alerta(error, 'error');
+            alerta(error.response.data.message, 'error');
             console.log(error);
         });
     }
 
     const validar = () => {
+        let payload;
+        let metodo;
+        let urlAxios;
+
         if (title === '') {
             alerta('Escriba el nombre del producto', 'warning', 'title');
         } else if (description === '') {
@@ -74,7 +81,23 @@ const ShowProductos = () => {
         } else if (price === '') {
             alerta('Escriba el precio del producto', 'warning', 'price');
         } else {
-            alerta('todo ok', 'success');
+            payload = {
+                title: title,
+                description: description,
+                price: price,
+                categoryId: 6,
+                images: ['https://c8.alamy.com/compes/r3yw81/el-icono-de-imagen-no-disponible-vector-plana-r3yw81.jpg']
+            };
+
+            if (operation === 1) {
+                metodo = 'POST';
+                urlAxios = 'https://api.escuelajs.co/api/v1/products/';
+            } else {
+                metodo = 'PUT';
+                urlAxios = `https://api.escuelajs.co/api/v1/products/${id}`;
+            }
+
+            enviarSolicitud(urlAxios, metodo, payload);
         }
     }
 
