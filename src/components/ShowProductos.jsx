@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { alerta } from '../functions';
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const ShowProductos = () => {
     const url = 'https://api.escuelajs.co/api/v1/products';
@@ -101,6 +103,27 @@ const ShowProductos = () => {
         }
     }
 
+    const deleteProducto = (id) => {
+        let urlDelete = `https://api.escuelajs.co/api/v1/products/${id}`;
+        const MySwal = withReactContent(Swal);
+        MySwal.fire({
+            title: '¿Está seguro de eliminar el producto?',
+            icon: 'question',
+            text: 'No habrá marcha atrás',
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setId(id);
+                enviarSolicitud(urlDelete, 'DELETE', {});
+            }
+        }).catch((error) => {
+            alerta(error, 'error');
+            console.log(error);
+        });
+    }
+
  return (
     <div className='App'>
         <div className='container-fluid'>
@@ -140,7 +163,7 @@ const ShowProductos = () => {
                                             <button onClick={() => openModal(2, product.id, product.title, product.description, product.price)} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalProducts'>
                                                 <i className='fa-solid fa-edit' />
                                             </button>
-                                            <button className='btn btn-danger'>
+                                            <button onClick={() => deleteProducto(product.id)} className='btn btn-danger'>
                                                 <i className='fa-solid fa-trash' />
                                             </button>
                                         </td>
