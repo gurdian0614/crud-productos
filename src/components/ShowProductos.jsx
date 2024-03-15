@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { alerta } from '../functions';
+import { alertaSuccess, alertaError, alertaWarning, alertaConfirmation } from '../functions';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -62,11 +62,11 @@ const ShowProductos = () => {
             } else if (metodo === 'DELETE') {
                 mensaje = 'Se eliminó el producto';
             }
-            alerta(mensaje, 'success');
+            alertaSuccess(mensaje);
             document.getElementById('btnCerrarModal').click();
             getProductos();
         }).catch((error) => {
-            alerta(error.response.data.message, 'error');
+            alertaError(error.response.data.message);
             console.log(error);
         });
     }
@@ -77,11 +77,11 @@ const ShowProductos = () => {
         let urlAxios;
 
         if (title === '') {
-            alerta('Escriba el nombre del producto', 'warning', 'title');
+            alertaWarning('Escriba el nombre del producto', 'title');
         } else if (description === '') {
-            alerta('Escriba la descripción del producto', 'warning', 'description');
+            alertaWarning('Escriba la descripción del producto', 'description');
         } else if (price === '') {
-            alerta('Escriba el precio del producto', 'warning', 'price');
+            alertaWarning('Escriba el precio del producto', 'price');
         } else {
             payload = {
                 title: title,
@@ -105,6 +105,7 @@ const ShowProductos = () => {
 
     const deleteProducto = (id) => {
         let urlDelete = `https://api.escuelajs.co/api/v1/products/${id}`;
+
         const MySwal = withReactContent(Swal);
         MySwal.fire({
             title: '¿Está seguro de eliminar el producto?',
@@ -119,7 +120,7 @@ const ShowProductos = () => {
                 enviarSolicitud(urlDelete, 'DELETE', {});
             }
         }).catch((error) => {
-            alerta(error, 'error');
+            alertaError(error);
             console.log(error);
         });
     }
@@ -146,7 +147,8 @@ const ShowProductos = () => {
                             <tr>
                                 <th>#</th>
                                 <th>Producto</th>
-                                <th>Descripcion</th>
+                                <th>Descripción</th>
+                                <th>Categoría</th>
                                 <th>Precio</th>
                                 <th>Acciones</th>
                             </tr>
@@ -158,6 +160,7 @@ const ShowProductos = () => {
                                         <td>{i + 1}</td>
                                         <td>{product.title}</td>
                                         <td>{product.description}</td>
+                                        <td>{product.category.name}</td>
                                         <td>${new Intl.NumberFormat('es-hn').format(product.price)}</td>
                                         <td>
                                             <button onClick={() => openModal(2, product.id, product.title, product.description, product.price)} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalProducts'>
