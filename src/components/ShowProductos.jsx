@@ -4,6 +4,11 @@ import { alertaSuccess, alertaError, alertaWarning, alertaConfirmation } from '.
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
+/**
+ * Componente que retorna el flujo de productos
+ * 
+ * @returns Componente productos
+ */
 const ShowProductos = () => {
     const url = 'https://api.escuelajs.co/api/v1/products';
     const [products, setProducts] = useState([]);
@@ -14,6 +19,9 @@ const ShowProductos = () => {
     const [titleModal, setTitleModal] = useState('');
     const [operation, setOperation] = useState(1);
 
+    /**
+     * Obtiene listado de productos desde la API
+     */
     const getProductos = async () => {
         const response = await axios.get(url);
         setProducts(response.data);
@@ -23,6 +31,15 @@ const ShowProductos = () => {
         getProductos();
     });
 
+    /**
+     * Abre el modal con los atributos del producto, si se va a editar, se cargan los datos.
+     * 
+     * @param {String} operation - 1. Agregar, 2. Editar
+     * @param {Number} id - Identificador del producto
+     * @param {String} title - Nombre del producto
+     * @param {String} description - Descripcion del producto
+     * @param {Number} price - Precio unitario del producto
+     */
     const openModal = (operation, id, title, description, price) => {
         setId('');
         setTitle('');
@@ -42,6 +59,13 @@ const ShowProductos = () => {
         }
     }
 
+    /**
+     * Permite el uso de la API dependiendo el tipo de operación
+     * 
+     * @param {String} url - URL de la API a consumir 
+     * @param {String} metodo - Tipo de metodo a utilizar: POST, PUT o DELETE
+     * @param {JSON} parametros - Objeto JSON que se enviará a la API
+     */
     const enviarSolicitud = async (url, metodo, parametros) => {
         let obj = {
             method: metodo,
@@ -71,6 +95,9 @@ const ShowProductos = () => {
         });
     }
 
+    /**
+     * Valida que cada uno de los campos del formulario no vayan vacíos
+     */
     const validar = () => {
         let payload;
         let metodo;
@@ -103,6 +130,11 @@ const ShowProductos = () => {
         }
     }
 
+    /**
+     * Proceso para eliminar un producto
+     * 
+     * @param {Number} id - Identificador del producto a eliminar 
+     */
     const deleteProducto = (id) => {
         let urlDelete = `https://api.escuelajs.co/api/v1/products/${id}`;
 
